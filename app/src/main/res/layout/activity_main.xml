@@ -57,15 +57,15 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="Address:"
-                    android:textSize="10sp"
+                    android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
-                    app:autoSizeTextType="uniform" />
+                    app:autoSizeTextType="none" />
 
                 <EditText
                     android:id="@+id/proxyAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_weight="10"
                     android:ems="10"
                     android:hint="Proxy address, ex. localhost"
                     android:inputType="textPersonName" />
@@ -86,15 +86,15 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="Port:"
-                    android:textSize="10sp"
+                    android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
-                    app:autoSizeTextType="uniform" />
+                    app:autoSizeTextType="none" />
 
                 <EditText
                     android:id="@+id/proxyPort"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="4"
+                    android:layout_weight="10"
                     android:ems="10"
                     android:hint="Proxy port, ex 8080"
                     android:inputType="textPersonName" />
@@ -114,15 +114,15 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="Dest ports:"
-                    android:textSize="10sp"
+                    android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
-                    app:autoSizeTextType="uniform" />
+                    app:autoSizeTextType="none" />
 
                 <EditText
                     android:id="@+id/proxyDestPort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
+                    android:layout_weight="10"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:text="80, 443" />
@@ -140,6 +140,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:enabled="false"
             android:gravity="start|top"
             android:hint="Command"
             android:inputType="textMultiLine"
