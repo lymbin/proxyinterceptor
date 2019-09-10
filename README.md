@@ -7,4 +7,4 @@ You can use this with [Burp Suite](https://portswigger.net/burp).
 App using iptables routing like this:
 > iptables -t nat -A OUTPUT -p tcp --dport <dport> -j DNAT --to-destination <proxy address>:<proxy port>
 
-![App Screen](/main-screen.png)
+<img src="/main-screen.png" width="40%">
