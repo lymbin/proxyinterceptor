@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">proxyinterceptor</string>
+    <string name="app_name">Proxy Interceptor</string>
+    <string name="main_activity_label">Proxy Interceptor Manager</string>
+    <string name="proxyindicator">ProxyIndicator</string>
 </resources>
