@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText destPortText;
 
     private MenuItem proxyIndicator;
+    private boolean proxyStatus = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        proxyIndicator = menu.findItem(R.id.miIndicator);
+        setProxyIndicator(proxyStatus);
         return true;
     }
 
@@ -68,28 +71,37 @@ public class MainActivity extends AppCompatActivity {
 
     public void generateCommand() {
         String[] destPorts = destPortText.getText().toString().split(",");
-        String commandStr = "";
+        StringBuilder commandStr = new StringBuilder();
         for (String port:destPorts) {
             port = port.trim();
-            commandStr += (String.format(startCommand, port, addressText.getText().toString(), portText.getText().toString()) + ", ");
+            commandStr.append(String.format(startCommand, port, addressText.getText().toString(), portText.getText().toString())).append(", ");
         }
-        commandStr = commandStr.substring(0, commandStr.length()-2);
-        commandText.setText(commandStr);
+        commandText.setText(commandStr.substring(0, commandStr.length()-2));
     }
 
     private void checkProxyStarted() {
-        /*String checkResult = SudoWorker.sudoWithReturn(checkCommand);
-        final String[] split = checkResult.split("tcp dpt:http to:");
+        String checkResult = SudoWorker.sudoWithReturn(checkCommand);
+        String[] split = checkResult.split("tcp dpt:http to:");
         try {
             if (split.length == 2) {
-                String[] proxyData = split[0].split(":");
+                String proxyInfo = split[1];
+                int dnatIndex = proxyInfo.indexOf("DNAT");
+                String[] proxyData = null;
+                if (dnatIndex == -1) {
+                    proxyData = proxyInfo.split(":");
+                }
+                else {
+                    proxyData = proxyInfo.substring(0, dnatIndex).split(":");
+                }
                 setProxyUi(proxyData[0], proxyData[1]);
+
+                generateCommand();
                 setProxyIndicator(true);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-*/
+
     }
 
     private void setProxyUi(final String proxyAddress, final String proxyPort) {
@@ -100,11 +112,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProxyIndicator (boolean status) {
-        if (status) {
-            proxyIndicator.setTitle("Proxy: On");
+        if (proxyIndicator != null) {
+            if (status) {
+                proxyIndicator.setTitle("Proxy: On");
+            }
+            else {
+                proxyIndicator.setTitle("Proxy: Off");
+            }
         }
         else {
-            proxyIndicator.setTitle("Proxy: Off");
+            proxyStatus = status;
         }
     }
 

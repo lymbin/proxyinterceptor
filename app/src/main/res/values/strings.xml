@@ -2,4 +2,12 @@
     <string name="app_name">Proxy Interceptor</string>
     <string name="main_activity_label">Proxy Interceptor Manager</string>
     <string name="proxyindicator">ProxyIndicator</string>
+    <string name="proxy_address_hint">Proxy address, ex. localhost</string>
+    <string name="address_text">Address:</string>
+    <string name="reset_button_text">Reset</string>
+    <string name="start_button_text">Start</string>
+    <string name="port_text">Port:</string>
+    <string name="proxy_port_hint">Proxy port, ex 8080</string>
+    <string name="dest_ports_text">Dest ports:</string>
+    <string name="command_hint">Command</string>
 </resources>
