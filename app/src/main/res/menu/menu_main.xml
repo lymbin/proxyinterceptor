@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/miIndicator"
-        app:showAsAction="always"
-        android:title="@string/proxyindicator">
-    </item>
+        android:icon="@drawable/ic_24px"
+        android:title="@android:string/untitled"
+        app:showAsAction="always|withText"></item>
 </menu>

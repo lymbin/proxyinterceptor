@@ -1,8 +1,21 @@
 package com.lymbin.proxyinterceptor;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem proxyIndicator;
     private boolean proxyStatus = false;
 
+    private NotificationManager notificationManager;
+    private static final String NOTIFICATION_CHANNEL_ID = "proxyinterceptor_channel";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         addressText.setOnFocusChangeListener(new DataEditorActionListener());
         portText.setOnFocusChangeListener(new DataEditorActionListener());
         destPortText.setOnFocusChangeListener(new DataEditorActionListener());
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (getIntent().hasExtra("proxyStatus")) {
+            boolean proxyStatus = getIntent().getBooleanExtra("proxyStatus", false);
+            if (!proxyStatus) {
+                resetProxy();
+                RemoveNotification();
+            }
+        }
+
         checkProxyStarted();
     }
 
@@ -65,6 +91,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onResetButtonClick(View view) {
+        resetProxy();
+    }
+
+    public void resetProxy() {
         SudoWorker.sudo(resetCommand);
         setProxyIndicator(false);
     }
@@ -114,14 +144,46 @@ public class MainActivity extends AppCompatActivity {
     private void setProxyIndicator (boolean status) {
         if (proxyIndicator != null) {
             if (status) {
+                proxyIndicator.getIcon().setColorFilter( getResources().getColor(android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
                 proxyIndicator.setTitle("Proxy: On");
+                MakeNotification("ProxyInterceptor", "Proxy is up on " + addressText.getText().toString() + ":" + portText.getText().toString());
             }
             else {
+                proxyIndicator.getIcon().setColorFilter( getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
                 proxyIndicator.setTitle("Proxy: Off");
+                RemoveNotification();
             }
         }
         else {
             proxyStatus = status;
+        }
+    }
+
+    private void MakeNotification(String title, String text) {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent stopIntent = new Intent(getApplicationContext(), MainActivity.class);
+        stopIntent.putExtra("proxyStatus", false);
+        PendingIntent stop = PendingIntent.getActivity(getApplicationContext(), 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        builder.setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .addAction(R.mipmap.ic_launcher, "Stop", stop);
+        if (notificationManager != null) {
+            notificationManager.notify(1, builder.build());
+        }
+    }
+
+    private void RemoveNotification() {
+        if (notificationManager != null) {
+            notificationManager.cancelAll();
         }
     }
 
