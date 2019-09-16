@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/miIndicator"
+        android:icon="@drawable/ic_24px"
+        android:title="@android:string/untitled"
+        app:showAsAction="always|withText"></item>
+</menu>
