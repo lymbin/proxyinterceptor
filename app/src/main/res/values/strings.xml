@@ -10,4 +10,7 @@
     <string name="proxy_port_hint">Proxy port, ex 8080</string>
     <string name="dest_ports_text">Dest ports:</string>
     <string name="command_hint">Command</string>
+    <string name="wifi_down_err_msg">WiFi is down</string>
+    <string name="log_tag">ProxyInterceptor</string>
+    <string name="unknown_host_msg">Unable to get gateway address.</string>
 </resources>
