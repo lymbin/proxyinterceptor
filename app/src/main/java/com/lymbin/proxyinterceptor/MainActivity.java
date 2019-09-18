@@ -35,21 +35,12 @@ import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 
 public class MainActivity extends AppCompatActivity {
-
-    public static String resetCommand = "iptables -t nat -F";
-    public static String startCommand = "iptables -t nat -A OUTPUT -p tcp --dport %s -j DNAT --to-destination %s:%s";
-    public static String checkCommand = "iptables -L -t nat | grep DNAT";
-
-    public String defaultAddress = "127.0.0.1";
-    public String defaultPort = "8080";
-
     private EditText commandText;
     private EditText addressText;
     private EditText portText;
     private EditText destPortText;
 
     private MenuItem proxyIndicator;
-    private boolean proxyStatus = false;
 
     private NotificationManager notificationManager;
     private static final String NOTIFICATION_CHANNEL_ID = "proxyinterceptor_channel";
@@ -87,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         proxyIndicator = menu.findItem(R.id.miIndicator);
-        setProxyIndicator(proxyStatus);
+        setProxyIndicator(ProxyConnector.proxyStatus);
         return true;
     }
 
@@ -101,16 +92,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onStartButtonClick(View view) {
-        setProxyUi(defaultAddress, defaultPort);
+        setProxyUi(ProxyConnector.defaultAddress, ProxyConnector.defaultPort);
         generateCommand();
-        String commandStrings = commandText.getText().toString();
-        String[] commands = commandStrings.split(",");
-        for (int i = 0; i < commands.length; i++) {
-            commands[i] = commands[i].trim();
-        }
-
-        SudoWorker.sudo(commands);
-        setProxyIndicator(true);
+        boolean proxyStatus = ProxyConnector.startProxy(commandText.getText().toString());
+        setProxyIndicator(proxyStatus);
     }
 
     public void onResetButtonClick(View view) {
@@ -118,18 +103,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void resetProxy() {
-        SudoWorker.sudo(resetCommand);
+        ProxyConnector.resetProxy();
         setProxyIndicator(false);
     }
 
     public void generateCommand() {
         String[] destPorts = destPortText.getText().toString().split(",");
-        StringBuilder commandStr = new StringBuilder();
-        for (String port:destPorts) {
-            port = port.trim();
-            commandStr.append(String.format(startCommand, port, addressText.getText().toString(), portText.getText().toString())).append(", ");
-        }
-        commandText.setText(commandStr.substring(0, commandStr.length()-2));
+        String command = ProxyConnector.generateCommand(addressText.getText().toString(), portText.getText().toString(), destPorts);
+        commandText.setText(command);
     }
 
     public void showToast(String message, int gravity, int length) {
@@ -146,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
             showToast(getString(R.string.wifi_down_err_msg), Gravity.BOTTOM, Toast.LENGTH_LONG);
         }
         else {
-            defaultAddress = wifiGateway;
-            if (!proxyStatus) {
-                setProxyUi(defaultAddress, defaultPort);
+            ProxyConnector.defaultAddress = wifiGateway;
+            if (!ProxyConnector.proxyStatus) {
+                setProxyUi(ProxyConnector.defaultAddress, ProxyConnector.defaultPort);
                 generateCommand();
             }
         }
@@ -182,26 +163,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkProxyStarted() {
-        String checkResult = SudoWorker.sudoWithReturn(checkCommand);
-        String[] split = checkResult.split("tcp dpt:http to:");
-        try {
-            if (split.length == 2) {
-                String proxyInfo = split[1];
-                int dnatIndex = proxyInfo.indexOf("DNAT");
-                String[] proxyData = null;
-                if (dnatIndex == -1) {
-                    proxyData = proxyInfo.split(":");
-                }
-                else {
-                    proxyData = proxyInfo.substring(0, dnatIndex).split(":");
-                }
-                setProxyUi(proxyData[0], proxyData[1]);
-
-                generateCommand();
-                setProxyIndicator(true);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String address = "";
+        String port = "";
+        if (ProxyConnector.checkProxy(address, port)) {
+            setProxyUi(address, port);
+            generateCommand();
+            setProxyIndicator(true);
         }
     }
 
@@ -213,9 +180,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProxyIndicator (boolean status) {
-        proxyStatus = status;
+        ProxyConnector.proxyStatus = status;
         if (proxyIndicator != null) {
-            if (proxyStatus) {
+            if (ProxyConnector.proxyStatus) {
                 proxyIndicator.getIcon().setColorFilter( getResources().getColor(android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
                 proxyIndicator.setTitle("Proxy: On");
                 MakeNotification(getString(R.string.log_tag), "Proxy is up on " + addressText.getText().toString() + ":" + portText.getText().toString());
