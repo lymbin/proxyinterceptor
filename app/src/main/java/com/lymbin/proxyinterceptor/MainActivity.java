@@ -3,15 +3,9 @@ package com.lymbin.proxyinterceptor;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.IOException;
-
-import java.io.DataOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,10 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onStartButtonClick(View view) {
-        if (addressText.getText().toString().isEmpty())
-            addressText.setText(defaultAddress);
-        if (portText.getText().toString().isEmpty())
-            portText.setText(defaultPort);
+        setProxyUi(defaultAddress, defaultPort);
         generateCommand();
         String commandStrings = commandText.getText().toString();
         String[] commands = commandStrings.split(",");
@@ -52,47 +43,28 @@ public class MainActivity extends AppCompatActivity {
             commands[i] = commands[i].trim();
         }
 
-        sudo(commands);
+        SudoWorker.sudo(commands);
     }
 
     public void onResetButtonClick(View view) {
-        sudo(resetCommand);
+        SudoWorker.sudo(resetCommand);
     }
 
     public void generateCommand() {
         String[] destPorts = destPortText.getText().toString().split(",");
-        String commandStr = "";
+        StringBuilder commandStr = new StringBuilder();
         for (String port:destPorts) {
             port = port.trim();
-            commandStr += String.format(startCommand, port, addressText.getText().toString(), portText.getText().toString()) + ", ";
+            commandStr.append(String.format(startCommand, port, addressText.getText().toString(), portText.getText().toString())).append(", ");
         }
-        commandStr = commandStr.substring(0, commandStr.length()-2);
-        commandText.setText(commandStr);
+        commandText.setText(commandStr.substring(0, commandStr.length()-2));
     }
 
-
-    public static void sudo(String... strings) {
-        try {
-            Process su = Runtime.getRuntime().exec("su");
-
-            DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
-
-            for (String s : strings) {
-                outputStream.writeBytes(s + "\n");
-                outputStream.flush();
-            }
-
-            outputStream.writeBytes("exit\n");
-            outputStream.flush();
-            try {
-                su.waitFor();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void setProxyUi(final String proxyAddress, final String proxyPort) {
+        if (addressText.getText().toString().isEmpty())
+            addressText.setText(proxyAddress);
+        if (portText.getText().toString().isEmpty())
+            portText.setText(proxyPort);
     }
 
     private class DataEditorActionListener implements TextView.OnFocusChangeListener {
@@ -103,5 +75,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }

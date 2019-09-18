@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:onClick="onStartButtonClick"
-                android:text="Start" />
+                android:text="@string/start_button_text" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:onClick="onResetButtonClick"
-                android:text="Reset" />
+                android:text="@string/reset_button_text" />
 
         </LinearLayout>
 
@@ -52,11 +52,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:capitalize="none"
                     android:clickable="false"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Address:"
+                    android:text="@string/address_text"
                     android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
                     app:autoSizeTextType="none" />
@@ -67,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="10"
                     android:ems="10"
-                    android:hint="Proxy address, ex. localhost"
+                    android:hint="@string/proxy_address_hint"
                     android:inputType="textPersonName" />
 
             </TableRow>
@@ -81,11 +80,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:capitalize="none"
                     android:clickable="false"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Port:"
+                    android:text="@string/port_text"
                     android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
                     app:autoSizeTextType="none" />
@@ -96,7 +94,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="10"
                     android:ems="10"
-                    android:hint="Proxy port, ex 8080"
+                    android:hint="@string/proxy_port_hint"
                     android:inputType="textPersonName" />
             </TableRow>
 
@@ -109,11 +107,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:capitalize="none"
                     android:clickable="false"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Dest ports:"
+                    android:text="@string/dest_ports_text"
                     android:textSize="18sp"
                     android:verticalScrollbarPosition="defaultPosition"
                     app:autoSizeTextType="none" />
@@ -128,11 +125,6 @@
                     android:text="80, 443" />
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </TableRow>
         </TableLayout>
 
         <EditText
@@ -142,7 +134,7 @@
             android:ems="10"
             android:enabled="false"
             android:gravity="start|top"
-            android:hint="Command"
+            android:hint="@string/command_hint"
             android:inputType="textMultiLine"
             android:singleLine="false" />
 
