@@ -36,6 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManager notificationManager;
     private static final String NOTIFICATION_CHANNEL_ID = "proxyinterceptor_channel";
 
+    /**
+     * Creates main activity. Gets ui widgets by findViewById method and set OnFocusChangeListener for EditText widgets.
+     * Also here a some proxy checks: first check is proxy started check, second is wifi connection check.
+     * Notification button 'Stop' opens MainActivity with extra 'proxyStatus = false'.
+     * In this case app should reset proxy and remove notifications.
+     *
+     * @param savedInstanceState default
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method called when Menu is shown on app screen.
+     * When it's happens method read proxy status and set indicator of it.
+     *
+     * @param menu Menu for this activity
+     * @return always true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -73,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * This method called when MenuItem is selected.
+     * If selected an indicator app show the toast message.
+     *
+     * @param item Selected menu item
+     * @return true or super.onOptionsItemSelected(item) if it's not an indicator
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.miIndicator) {
@@ -82,6 +104,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * On Start button click handler.
+     * Generates command and start proxy with that command.
+     * Set proxy indicator.
+     *
+     * @param view not used
+     */
     public void onStartButtonClick(View view) {
         setProxyUi(ProxyConnector.defaultAddress, ProxyConnector.defaultPort);
         generateCommand();
@@ -89,21 +118,42 @@ public class MainActivity extends AppCompatActivity {
         setProxyIndicator(proxyStatus);
     }
 
+    /**
+     * On Reset button click handler.
+     * Resets proxy.
+     *
+     * @param view not used
+     */
+
     public void onResetButtonClick(View view) {
         resetProxy();
     }
 
+    /**
+     * Call resetProxy and set proxy indicator to false.
+     *
+     */
     public void resetProxy() {
         ProxyConnector.resetProxy();
         setProxyIndicator(false);
     }
 
+    /**
+     * Parse data from UI fields and send it to command generator.
+     */
     public void generateCommand() {
         String[] destPorts = destPortText.getText().toString().split(",");
         String command = ProxyConnector.generateCommand(addressText.getText().toString(), portText.getText().toString(), destPorts);
         commandText.setText(command);
     }
 
+    /**
+     * Show message as toast notification.
+     *
+     * @param message Message to show
+     * @param gravity Where show the message
+     * @param length Length of toast
+     */
     public void showToast(String message, int gravity, int length) {
         Toast toast = Toast.makeText(getApplicationContext(),
                 message,
@@ -112,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
+    /**
+     * Initial check for wifi connection. It's also set wifi gateway as proxy address in UI field.
+     *
+     * @param context App context.
+     */
     private void initialCheck(Context context) {
         String wifiGateway = wifiGetGateway(context);
         if (wifiGateway == null) {
@@ -126,6 +181,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Get wifi gateway via WifiManager.getDhcpInfo().gateway.
+     *
+     * @param context App context.
+     * @return gateway address or null in case of errors
+     */
     protected String wifiGetGateway(Context context) {
         WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
 
@@ -153,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks proxy starts already. In case it's started - sets UI params and generate command.
+     */
     private void checkProxyStarted() {
         String address = "";
         String port = "";
@@ -163,6 +227,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set address and port of proxy in UI fields.
+     *
+     * @param proxyAddress Address of proxy server
+     * @param proxyPort Port of proxy server
+     */
     private void setProxyUi(final String proxyAddress, final String proxyPort) {
         if (addressText.getText().toString().isEmpty())
             addressText.setText(proxyAddress);
@@ -170,6 +240,11 @@ public class MainActivity extends AppCompatActivity {
             portText.setText(proxyPort);
     }
 
+    /**
+     * Set proxy status in proxy indicator menu item (green or red icon) and make/remove notification.
+     *
+     * @param status Proxy Up/Down status.
+     */
     private void setProxyIndicator (boolean status) {
         ProxyConnector.proxyStatus = status;
         if (proxyIndicator != null) {
@@ -186,6 +261,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Make app notification with title and text via notificationManager.
+     *
+     * @param title Title of notification.
+     * @param text Text of notification.
+     */
     private void MakeNotification(String title, String text) {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         PendingIntent openAppItent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -208,6 +289,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method to remove all app notifications.
+     */
     private void RemoveNotification() {
         if (notificationManager != null) {
             notificationManager.cancelAll();
@@ -215,6 +299,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class DataEditorActionListener implements TextView.OnFocusChangeListener {
+        /**
+         * Method called when edittext focus has changed.
+         *
+         * @param v not used
+         * @param hasFocus status of edittext focus
+         */
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if (!hasFocus) {

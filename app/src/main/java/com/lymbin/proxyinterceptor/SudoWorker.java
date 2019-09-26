@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 class SudoWorker {
+    /**
+     * Run commands as su.
+     *
+     * @param strings command that run in su process.
+     */
     static void sudo(String... strings) {
         try {
             Process su = Runtime.getRuntime().exec("su");
@@ -29,6 +34,12 @@ class SudoWorker {
         }
     }
 
+    /**
+     * Run command as su and return it result.
+     *
+     * @param string command.
+     * @return return from command.
+     */
     static String sudoWithReturn(String string) {
         try {
             Process su = Runtime.getRuntime().exec(new String[]{"su", "-c", string});

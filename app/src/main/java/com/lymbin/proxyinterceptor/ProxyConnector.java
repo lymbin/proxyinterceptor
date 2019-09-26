@@ -10,6 +10,12 @@ class ProxyConnector {
     static String defaultAddress = "127.0.0.1";
     static String defaultPort = "8080";
 
+    /**
+     * Split commands and run it as su.
+     *
+     * @param commandStrings commands
+     * @return true
+     */
     static boolean startProxy(String commandStrings) {
         String[] commands = commandStrings.split(",");
         for (int i = 0; i < commands.length; i++) {
@@ -20,10 +26,20 @@ class ProxyConnector {
         return true;
     }
 
+    /**
+     * Run reset command as su.
+     */
     static void resetProxy() {
         SudoWorker.sudo(resetCommand);
     }
 
+    /**
+     * Run checkProxy command as su. Parse address and port of proxy from return.
+     *
+     * @param address return address of NAT routing proxy.
+     * @param port return port of NAT routing proxy.
+     * @return Status of NAT routing: on/off.
+     */
     static boolean checkProxy(String address, String port) {
         String checkResult = SudoWorker.sudoWithReturn(checkCommand);
         String[] split = checkResult.split("tcp dpt:http to:");
@@ -50,6 +66,14 @@ class ProxyConnector {
         return false;
     }
 
+    /**
+     * Generate commands from input values.
+     *
+     * @param address Proxy address from UI.
+     * @param port Proxy port from UI.
+     * @param destPorts Dest Ports from UI.
+     * @return generated command.
+     */
     static String generateCommand(final String address, final String port, final String... destPorts) {
         StringBuilder commandStr = new StringBuilder();
         for (String destPort:destPorts) {
