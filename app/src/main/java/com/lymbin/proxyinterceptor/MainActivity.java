@@ -220,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
     private void checkProxyStarted() {
         String address = "";
         String port = "";
-        if (ProxyConnector.checkProxy(address, port)) {
-            setProxyUi(address, port);
+        if (ProxyConnector.checkProxy()) {
+            setProxyUi(ProxyConnector.defaultAddress, ProxyConnector.defaultPort);
             generateCommand();
             setProxyIndicator(true);
         }

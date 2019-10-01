@@ -36,11 +36,9 @@ class ProxyConnector {
     /**
      * Run checkProxy command as su. Parse address and port of proxy from return.
      *
-     * @param address return address of NAT routing proxy.
-     * @param port return port of NAT routing proxy.
      * @return Status of NAT routing: on/off.
      */
-    static boolean checkProxy(String address, String port) {
+    static boolean checkProxy() {
         String checkResult = SudoWorker.sudoWithReturn(checkCommand);
         String[] split = checkResult.split("tcp dpt:http to:");
         try {
@@ -55,8 +53,8 @@ class ProxyConnector {
                     proxyData = proxyInfo.substring(0, dnatIndex).split(":");
                 }
                 if (proxyData.length == 2) {
-                    address = proxyData[0];
-                    port = proxyData[1];
+                    defaultAddress = proxyData[0];
+                    defaultPort = proxyData[1];
                 }
                 return true;
             }
